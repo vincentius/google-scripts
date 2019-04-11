@@ -1,7 +1,15 @@
 function maakZoekvragenSheetOpDonderdag() { 
   Logger.log(SpreadsheetApp.getActiveSheet());
   
-  var googleDoc = SpreadsheetApp.openByUrl("https://docs.google.com/spreadsheets/d/<knip>/edit");
+  var googleDoc = SpreadsheetApp.openByUrl("https://docs.google.com/spreadsheets/d/1KYLnckVKGxAcwqumgGjj1FRSy5fDVIu6brILqwS6nSI/edit");
+  
+  var configSheet = googleDoc.getSheetByName("_CONFIG");
+  
+  // Doe niets als sheet niet actief is
+  if ("X" != configSheet.getRange("B1").getValue().toUpperCase()) {
+    Logger.log("Sheet niet actief")
+    return;
+  }
   
   var templateSheet = googleDoc.getSheetByName("_TEMPLATE");
   var templateRange = templateSheet.getRange("A1:Z50");
@@ -25,13 +33,13 @@ function maakZoekvragenSheetOpDonderdag() {
   templateRange.copyTo(newSheetRange, SpreadsheetApp.CopyPasteType.PASTE_COLUMN_WIDTHS, false);
   
   var shareLink = (
-    "https://docs.google.com/spreadsheets/d/<knip>/edit#gid=" +
+    "https://docs.google.com/spreadsheets/d/1KYLnckVKGxAcwqumgGjj1FRSy5fDVIu6brILqwS6nSI/edit#gid=" +
     newSheet.getSheetId() +
     " (Dit was een automatisch bericht)");
-    
-  var emails = [
-  // emails go here
-  ];
+  
+  Logger.log("Sharing Link: " + shareLink);
+  
+  var emails = configSheet.getRange("D1:D50").getValues().filter(function(x){ return x != ""; });
   
   for each (var email in emails){
     MailApp.sendEmail(email, "[BNI LVA] Deellink Google Sheet " + nextThursdayString, shareLink);
